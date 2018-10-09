@@ -63,7 +63,16 @@ export default {
 
     try {
       const response = await jwt.decode(token, auth_secret);
-      const user = await User.findById(response.sub, { password: 0 });
+      const user = await User.findById(response.sub, { password: 0 }).populate([
+        {
+          path: 'createdPolls',
+          select: 'title _id',
+        },
+        {
+          path: 'votedInPolls',
+          select: 'title _id',
+        },
+      ]);
 
       return res.status(200).json({ user });
     } catch (error) {

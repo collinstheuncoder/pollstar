@@ -1,12 +1,46 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import axios from 'axios';
+import 'semantic-ui-css/semantic.min.css';
+
+import App from './components/App';
+import constants from './constants';
+import store from './store';
 import './index.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+// Check if token present i.e user is still authenticated and login
+const token = localStorage.getItem('pollstar-token');
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
+autoLogin(token);
+
+// Auto login user on refresh
+async function autoLogin(token) {
+	if (token) {
+	  const userInfo = await getUserInfo(token);
+
+	  store.dispatch({
+	    type: constants.store.users.LOGIN_SUCCESS,
+	    payload: userInfo.data.user,
+	  });
+	}
+}
+
+// Get authenticated user's info
+async function getUserInfo(token) {
+  const response = await axios.post('/auth/me', { token });
+  return response;
+}
+
+ReactDOM.render(
+	<Provider store={store}>
+    <Router>
+      <App />
+    </Router>
+  </Provider>, 
+  document.getElementById('root')
+);
+
 serviceWorker.unregister();

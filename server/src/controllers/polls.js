@@ -1,4 +1,5 @@
 import Poll from '../models/poll';
+import User from '../models/user';
 
 export default {
   fetchAllPolls: async (req, res) => {
@@ -66,6 +67,7 @@ export default {
 
   createNewPoll: async (req, res) => {
     const { title, category, choices, addedBy } = req.body;
+
     const formattedChoices = () =>
       choices.map(choice => {
         const formattedChoice = { name: choice, votes: 0 };
@@ -73,17 +75,23 @@ export default {
       });
 
     try {
-      const newPoll = await new Poll({
+      // Save new poll to DB
+      const newPoll = await Poll.create({
         title,
         category,
         choices: formattedChoices(),
+        addedBy,
       });
 
-      poll.addedBy.push(addedBy);
-      await newPoll.save();
+      // Update current user's created polls list
+      await User.findByIdAndUpdate(
+        addedBy,
+        { $push: { createdPolls: newPoll._id } },
+      )
 
       res.status(200).json({
         success: true,
+        newPoll,
         message: 'Successful Submission.',
       });
     } catch (error) {

@@ -8,7 +8,26 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+input,
+select,
+button {
+	border-radius: 0 !important;
 }
+
+button {
+	margin: 0.5rem 0 !important;
+}
+
+a.active.section {
+	cursor: inherit;
+}
+
+.recharts-wrapper {
+	margin: auto !important;
+}
+
+.add-choice {
+  display: flex;
+  margin: 0px !important;
+}
+
